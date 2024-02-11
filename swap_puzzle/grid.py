@@ -1,9 +1,10 @@
 """
 This is the grid module. It contains the Grid class and its associated methods.
 """
-
+from itertools import permutations
 import random
 import matplotlib.pyplot as plt
+from graph import Graph
 class Grid():
     """
     A class representing the grid from the swap puzzle. It supports rectangular grids. 
@@ -30,7 +31,7 @@ class Grid():
         n: int
             Number of columns in the grid
         initial_state: list[list[int]]
-            The intiail state of the grid. Default is empty (then the grid is created sorted).
+            The intitial state of the grid. Default is empty (then the grid is created sorted).
         """
         self.m = m
         self.n = n
@@ -55,9 +56,9 @@ class Grid():
 
     def is_sorted(self):
         """
-        Checks is the current state of the grid is sorte and returns the answer as a boolean.
+        Checks is the current state of the grid is sorted and returns the answer as a boolean.
         """
-        b = Grid(len(self.state), len(self.state[0]))
+        b = Grid(len(self.state), len(self.state[0])) #new sorted grid
         if self.state == b.state :
             return True
         else :
@@ -66,7 +67,7 @@ class Grid():
 
     def swap(self, cell1, cell2):
         """
-        Implements the swap operation between two cells. Raises an exception if the swap is not allowed.
+        Implements the swap operation between two cells. It can be an impossible swap but we created a function that convert an impossible swap in a sequence of possible swap (see solver.py line 51)
 
         Parameters: 
         -----------
@@ -120,40 +121,192 @@ class Grid():
         return grid
 
 
-"""
-    def quadri(self):
+    def rep_grid(self):
+        """
+        Plot a representation of a grid, according to its current state, using matplotlib.pyplot.
+        
+        Parameters: 
+        -----------
+        Output: 
+        -------
+        """
+        #quadrillage
+        for k in range(self.n):
+            for j in range(self.m):
+                plt.plot([k-1, k, k, k-1, k-1], [j-1, j-1, j, j, j-1], 'k')
 
-        #coloriage gris clair
-        fig = plt.figure(1)
-        ax = fig.add_subplot(1,1,1)
-        for i in range(-1, self.n-1): #ligne inf
-            xy=(i,-1)
-            w=1
-            h=1
-            rect = plt.Rectangle(xy, w, h, color="gray")
-            ax.add_patch(rect)
+        #remplissage des cases avec leurs pondérations respectives
+        for i in range(self.m-1, -1, -1):
+            for j in range(0,self.n):
+                plt.text(j-1/2, self.m - 2 -(i-1/2), round(self.state[i][j], 1), fontsize = 15, horizontalalignment = 'center', verticalalignment = 'center')
+        
+        plt.axis('off')    
+        plt.show()
 
-        for i in range(-1, self.n-1): #ligne sup
-            xy=(i,self.n-2)
-            w=1
-            h=1
-            rect = plt.Rectangle(xy, w, h, color="gray")
-            ax.add_patch(rect)
+    def grid_to_tuple(self):
+        """
+        Convert a grid (2-dimensionals) into a tuple (1-dimensional) with the following rule : (first line, second line, ... , last line)
+        
+        Parameters: 
+        -----------
+        Output: 
+        -------
+        t : tuple(int) 
+            Describe the state of a grid using a tuple
+        """
+        l = []
+        m = self.m
+        n = self.n
+        for i in range(m):
+            for j in range(n):
+                l.append(self.state[i][j])
+        t = tuple(l)
+        return t
 
-        for j in range(-1, self.m-1): #colone gauche
-            xy=(-1,j)
-            w=1
-            h=1
-            rect = plt.Rectangle(xy, w, h, color="gray")
-            ax.add_patch(rect)
+    def tuple_to_int(self, t):
+        """
+        Convert a tuple describing a state of a grid into a integer (hash function)
+        
+        Parameters: 
+        -----------
+        t : tuple(int)
+            Describe the state of a grid using a tuple
+        Output: 
+        -------
+        a : int 
+            Describe the state of a grid using an integer
+        """
+        res = ""
+        for i in range(len(t)):
+            res = res + str(t[i])
+        a = int(res)
+        return a
 
-        for j in range(-1, self.m -1): #colone droite
-            xy=(self.m-2,j)
-            w=1
-            h=1
-            rect = plt.Rectangle(xy, w, h, color="gray")
-            ax.add_patch(rect)
-"""
+    def int_to_tuple(self, n):
+        """
+        Convert a int describing a state of a grid into a tuple (reciprocal hash function)
+        
+        Parameters: 
+        -----------
+        a : int 
+            Describe the state of a grid using an integer
+        Output: 
+        -------
+        t : tuple(int)
+            Describe the state of a grid using a tuple
+        """
+        a = str(n)
+        b = len(a)
+        t = []
+        for i in range(b):
+            t.append(int(a[i]))
+        return tuple(t)
+
+    def swap_in_tuples(self, t, i, j):
+        """
+        Allow the swap of two elements in a tuple (by creating a new one because tuple is a immutable object)       
+        
+        Parameters: 
+        -----------
+        t : tuple
+            Tuple on wich we want to make a swap
+        i, j: index of the tuple elements that we want to swap
+        Output: 
+        -------
+        T : tuple
+            Tuple on wich the swap was made
+        """
+        L = list(t)
+        L[i], L[j] = L[j], L[i]
+        T = tuple(L)
+        return T
+
+    def tuple_to_grid(self, t, m, n):
+        """
+        Convert a tuple into a grid. m*n must be equal to len(t)
+        
+        Parameters : 
+        -----------
+        t: tuple
+            Tuple to be converted.
+        m, n : int
+            Respectively the number of lines and column of the grid
+        Output :
+        -------
+        g : Grid
+            Grid with the numbers gave by t and with dimensions (m,n)
+        """
+       
+        L = []
+        for i in range(m):
+            L2 = []
+            for j in range(n):
+                L2.append(t[n*i + j])
+            L.append(L2)
+        g = Grid(m, n, L)
+        return g   
+
+    def simple_swap(self, g1, g2):
+        """
+        Returns the swap from g1 to g2 which are only separated by one swap
+        
+        Parameters: 
+        -----------
+        g1 : grid
+        g2 : grid
+        Output: 
+        -------
+        T : tuple(tuple(int, int), tuple(int, int))
+            Tuple of the swap from g1 to g2
+        """
+        m, n = g1.m, g1.n
+        L = []
+        for i in range(m):
+            for j in range(n):
+                if g1.state[i][j] != g2.state[i][j]:
+                    L.append((i,j))
+        T = tuple(L)
+        return T
+
+    def bfs_2(self):
+        """
+        Gives a solution of optimal length for the swap puzzle using BFS algorithm
+        
+        Parameters: 
+        -----------
+        Output: 
+        -------
+        L_p : list[tuple(tuple(int, int), tuple(int, int))]
+            List of swaps that described the optimal solution to go from the initial state of grid to the sorted state
+        """
+        n,m = self.n, self.m
+        A = n*m
+        L = list(permutations(range(1, A+1), A))
+        g = Graph()
+        L_hash = []
+        for i in L:
+            L_hash.append(self.tuple_to_int(i))
+        g.nodes = L_hash
+        for t in L: 
+            for j in range(m):
+                for i in range(n-1):
+                    g.add_edge(self.tuple_to_int(t),self.tuple_to_int(self.swap_in_tuples(t,n*j + i, n*j + i+1 )))
+            for j in range(m-1):
+                for i in range(n):
+                    g.add_edge(self.tuple_to_int(t),self.tuple_to_int(self.swap_in_tuples(t,n*j + i, n*(j+1) + i)))
+        src = self.tuple_to_int(self.grid_to_tuple())
+
+        c = Grid(m,n)
+        dst = self.tuple_to_int(c.grid_to_tuple())
+            
+        X = g.bfs(src, dst)
+        L_s = []
+        N = len(X)
+        for i in range(N-1):
+            
+            L_s.append(self.simple_swap(self.tuple_to_grid(self.int_to_tuple(X[i]), self.m, self.n), self.tuple_to_grid(self.int_to_tuple(X[i+1]), self.m, self.n)))
+        T_s = tuple(L_s)   
+        return T_s
    
 
 

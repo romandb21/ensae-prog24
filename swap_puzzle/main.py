@@ -26,7 +26,7 @@ L = [((0, 0), (0,1)), ((1, 0), (1,1))]
 
 a.swap_seq(L)
 print(a)
-"""
+
 a = Solver(2, 3)
 a.swap((0,0), (1, 2))
 print(a)
@@ -40,3 +40,7 @@ print(g)
 print(g.bfs(0, 9))
 L = list(permutations(range(1, 7), 6))
 print(L)
+"""
+
+z = Grid(2,3 , [[2,5,3], [4,1,6]])
+print(z.bfs_2())
