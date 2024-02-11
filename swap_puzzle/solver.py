@@ -32,7 +32,7 @@ class Solver(Grid):
             if (i+1)%n == 0:
                 c_0 = (((i+1)//n)-1, n-1)
 
-            else : 
+            else: 
                 c_0 = (((i+1)//n), ((i+1)%n)-1)
 
             if L[i] != i+1:
@@ -46,7 +46,7 @@ class Solver(Grid):
                 C = (c_0, c_1)
                 L_swap.append(C)
         return L_swap
-
+    #La complexité temporelle est en O(nm*(nm!))
 
     def transfo(self, T):
         """Transform an impossible swap in a sequence of possible swaps
@@ -96,14 +96,6 @@ class Solver(Grid):
         L_f = self.transfo_seq(L)
         return L_f
 
-    def possibilities(self):
-        n,m = self.n, self.m
-        A = n*m
-        L = list(permutations(range(1, A+1), A))
-        g = Graph()
-        L_hash = []
-        for i in L:
-            L_hash.append(hash(i))
-        g.nodes = L_hash
+    
         
 

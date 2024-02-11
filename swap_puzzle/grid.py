@@ -307,6 +307,7 @@ class Grid():
             L_s.append(self.simple_swap(self.tuple_to_grid(self.int_to_tuple(X[i]), self.m, self.n), self.tuple_to_grid(self.int_to_tuple(X[i+1]), self.m, self.n)))
         T_s = tuple(L_s)   
         return T_s
-   
+   #Le graphe g est constitué de (n*m)! sommets et de 2mn-n-m arrêtes
+
 
 
