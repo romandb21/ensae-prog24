@@ -42,5 +42,13 @@ L = list(permutations(range(1, 7), 6))
 print(L)
 """
 
+import heapq 
+
+L = [4,3,2,1,5]
+heapq.heapify(L)
+print(list(L))
+
+g = Grid(2, 3, [[1, 2, 3],[4, 6, 5]])
 z = Grid(2,3 , [[2,5,3], [4,1,6]])
-print(z.bfs_2())
+print(z.A_etoile(g))
+

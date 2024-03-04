@@ -50,4 +50,4 @@ F = D + "graph2.in"
 
 ggg = Graph.graph_from_file(F)
 print(ggg)
-print(ggg.bfs(4, 9))
+print(ggg.(4, 9))
