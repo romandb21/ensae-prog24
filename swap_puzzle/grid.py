@@ -310,17 +310,19 @@ class Grid():
    #Le graphe g est constitué de (n*m)! sommets et de 2mn-n-m arrêtes
 
 
-
-
-
     def heuristique(self, grid):
         value = 0
         for i in range(self.m):
             for j in range(self.n):
                 if self.state[i][j] != grid.state[i][j]:
                     value += 1
-        return value/2
-
+        return value
+    
+    def result_swap(self, swap):
+        t = self.grid_to_tuple()
+        l = list(t)
+        l[swap[0]], l[swap[1]] = l[swap[1]], l[swap[0]]
+        return(self.tuple_to_grid(tuple(l), self.m, self.n))
     
     def compareheuristique(self, grid1, grid2):
         if self.heuristique(grid1) < self.heuristique(grid2):
@@ -330,76 +332,37 @@ class Grid():
         else:
             return -1
 
-    def fusion(self,L1,L2):
-        n1 = len(L1)
-        n2 = len(L2)
-        L12 = [0]*(n1+n2)
-        i1 = 0
-        i2 = 0
-        i = 0
-        while i1<n1 and i2<n2:
-            if self.compareheuristique(L1[i1], L2[i2]) == 1:
-                L12[i] = L1[i1]
-                i1 += 1
-            else:
-                L12[i] = L2[i2]
-                i2 += 1
-            i += 1
-        while i1<n1:
-    	    L12[i] = L1[i1]
-    	    i1 += 1
-    	    i += 1
-        while i2<n2:
-    	    L12[i] = L2[i2]
-    	    i2 += 1
-    	    i += 1 
-        return L12
-
-
-
-    def tri_fusion_recursif(self, L):
-        n = len(L)
-        if n > 1: 
-            p = int(n/2)
-            L1 = L[0:p]
-            L2 = L[p:n]
-            tri_fusion_recursif(L1)
-            tri_fusion_recursif(L2)
-            L[:] = fusion(L1,L2)
-    
-    def tri_fusion(self, L):
-        M = list(L)
-        self.tri_fusion_recursif(M)
-        return M
-
-
     def A_etoile(self, départ):
         closedFile = []
         heapq.heapify(closedFile)
         openFile = []
         heapq.heapify(openFile)
-        heapq.heappush(openFile, self.heuristique(départ))
-        print(list(openFile))
+        heapq.heappush(openFile, (self.heuristique(départ), départ))
+        print(openFile)
         while len(openFile) > 0:
-            liste = heapq.nsmallest(1, openFile, self.heuristique)
-            u = liste[0]
-            if self.state == u.state :
+            v , g = heapq.heappop(openFile)
+            if self.state == u.state:
                 heapq.heappush(closedFile, u)
                 return closedFile
             voisin = []
-            t = u.grid_to_tuple()
+            for j in range(u.m):
+                for i in range(0, u.n, 2):
+                    if 
+                        voisin.append(g.result_swap((i + j*)))
+                       
+            """
             for j in range(u.m):
                 for i in range(u.n-1):
                     if self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*j + i+1 ), u.m, u.n) not in closedFile and self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*j + i+1 ), u.m, u.n) not in openFile :
-                        voisin.append(self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*j + i+1), u.m, u.n))
+                        voisin.append((self.heuristique(self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*j + i+1), u.m, u.n)), self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*j + i+1), u.m, u.n)))
             for j in range(u.m-1):
                 for i in range(u.n):
                     if self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*(j+1) + i), u.m, u.n) not in closedFile and self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*(j+1) + i), u.m, u.n) not in openFile :
-                        voisin.append(self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*(j+1) + i), u.m, u.n))
-            voisin = heapq.nsmallest(len(voisin), voisin, self.heuristique)
-            openFile = heapq.nsmallest(len(voisin+openFile), voisin+openFile, self.heuristique)
-            print(openFile)
-            heapq.heappush(closedFile, u)
+                        voisin.append((self.heuristique(self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*(j+1) + i), u.m, u.n)), self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*(j+1) + i), u.m, u.n)))
+            """
+            for i in voisin:
+                heapq.heappush(openFile, i)
+            closedFile.append(u)
         return None
                    
 
