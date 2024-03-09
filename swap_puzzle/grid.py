@@ -338,31 +338,29 @@ class Grid():
         openFile = []
         heapq.heapify(openFile)
         heapq.heappush(openFile, (self.heuristique(départ), départ))
-        print(openFile)
         while len(openFile) > 0:
             v , g = heapq.heappop(openFile)
-            if self.state == u.state:
-                heapq.heappush(closedFile, u)
+            if self.state == g.state:
+                heapq.heappush(closedFile, g)
                 return closedFile
             voisin = []
-            for j in range(u.m):
-                for i in range(0, u.n, 2):
-                    if 
-                        voisin.append(g.result_swap((i + j*)))
-                       
-            """
-            for j in range(u.m):
-                for i in range(u.n-1):
-                    if self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*j + i+1 ), u.m, u.n) not in closedFile and self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*j + i+1 ), u.m, u.n) not in openFile :
-                        voisin.append((self.heuristique(self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*j + i+1), u.m, u.n)), self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*j + i+1), u.m, u.n)))
-            for j in range(u.m-1):
-                for i in range(u.n):
-                    if self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*(j+1) + i), u.m, u.n) not in closedFile and self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*(j+1) + i), u.m, u.n) not in openFile :
-                        voisin.append((self.heuristique(self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*(j+1) + i), u.m, u.n)), self.tuple_to_grid(self.swap_in_tuples(t,u.n*j + i, u.n*(j+1) + i), u.m, u.n)))
-            """
+            n = g.n
+            m = g.m
+            for j in range(n-1): #on parcourt les n colonnes 
+                if m%2 == 0: # si on a un nombre pair de lignes
+                    for i in range(0, m-2, 2): 
+                        voisin.append((self.heuristique(g.result_swap((i + j*n, i+1 + j*n))), g.result_swap((i + j*n, i+1 + j *n))))
+                        print(g.result_swap((i + j*n, i+1 + j*n)))
+                        voisin.append((self.heuristique(g.result_swap((i + j*n, i + (j+1)*n))), g.result_swap((i + j*n, i + (j+1)*n))))
+                        print(g.result_swap((i + j*n, i + (j+1)*n)))
+                else:
+                    for i in range(0, m, 2):
+                        voisin.append((self.heuristique(g.result_swap((i + j*n, i+1 + j *n))), g.result_swap((i + j*n, i+1 + j *n))))
+                        voisin.append((self.heuristique(g.result_swap((i + j*n, i + (j+1) *n))), g.result_swap((i + j*n, i + (j+1)*n))))
+                    voisin.append((self.heuristique(g.result_swap((m-2 + j*n, m-1 + (j+1) *n))), g.result_swap((m-2 + j*n, m-1 + (j+1)*n))))
             for i in voisin:
                 heapq.heappush(openFile, i)
-            closedFile.append(u)
+            closedFile.append(g)
         return None
                    
 

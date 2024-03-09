@@ -1,10 +1,10 @@
+
 import matplotlib.pyplot as plt
 from grid import Grid
 from solver import Solver
 from graph import Graph
 
 from itertools import permutations
-
 """
 g = Grid(2, 3)
 print(g)
@@ -40,7 +40,7 @@ print(g)
 print(g.bfs(0, 9))
 L = list(permutations(range(1, 7), 6))
 print(L)
-"""
+
 import heapq 
 L = [(2, 3), (4, 6), (1, 9)]
 heapq.heapify(L)
@@ -48,11 +48,25 @@ a, b = heapq.heappop(L)
 print(L)
 print(a)
 print(b)
-
-
 """
 
-g = Grid(2, 3, [[1, 2, 3],[4, 6, 5]])
-z = Grid(2,3 , [[2,5,3], [4,1,6]])
-print(z.A_etoile(g))
-"""
+g = Grid(2, 2, [[1, 2],[4, 3]])
+z = Grid(2,2, [[2,3], [4,1]])
+voisin = []
+n = g.n
+m = g.m
+for i in range(n-1): #on parcourt les n colonnes 
+    if m%2 == 0: # si on a un nombre pair de lignes
+        for j in range(0, m-1, 2): 
+            print((i + j*n, i+1 + j*n))
+            voisin.append((z.heuristique(g.result_swap((i + j*n, i+1 + j*n))), g.result_swap((i + j*n, i+1 + j *n))))
+            print((i + j*n, i + (j+1)*n))
+            voisin.append((z.heuristique(g.result_swap((i + j*n, i + (j+1)*n))), g.result_swap((i + j*n, i + (j+1)*n))))
+    else:
+        for j in range(0, m-1, 2):
+            
+            voisin.append((z.heuristique(g.result_swap((i + j*n, i+1 + j *n))), g.result_swap((i + j*n, i+1 + j *n))))
+            voisin.append((z.heuristique(g.result_swap((i + j*n, i + (j+1) *n))), g.result_swap((i + j*n, i + (j+1)*n))))
+        
+    
+print(voisin)
