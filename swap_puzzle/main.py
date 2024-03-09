@@ -50,23 +50,6 @@ print(a)
 print(b)
 """
 
-g = Grid(2, 2, [[1, 2],[4, 3]])
-z = Grid(2,2, [[2,3], [4,1]])
-voisin = []
-n = g.n
-m = g.m
-for i in range(n-1): #on parcourt les n colonnes 
-    if m%2 == 0: # si on a un nombre pair de lignes
-        for j in range(0, m-1, 2): 
-            print((i + j*n, i+1 + j*n))
-            voisin.append((z.heuristique(g.result_swap((i + j*n, i+1 + j*n))), g.result_swap((i + j*n, i+1 + j *n))))
-            print((i + j*n, i + (j+1)*n))
-            voisin.append((z.heuristique(g.result_swap((i + j*n, i + (j+1)*n))), g.result_swap((i + j*n, i + (j+1)*n))))
-    else:
-        for j in range(0, m-1, 2):
-            
-            voisin.append((z.heuristique(g.result_swap((i + j*n, i+1 + j *n))), g.result_swap((i + j*n, i+1 + j *n))))
-            voisin.append((z.heuristique(g.result_swap((i + j*n, i + (j+1) *n))), g.result_swap((i + j*n, i + (j+1)*n))))
-        
-    
-print(voisin)
+g = Grid(3, 2, [[1, 2],[4, 3],[5, 6]])
+z = Grid(3,2, [[2,3], [4,1], [5, 6]])
+L = g.voisin()

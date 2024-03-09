@@ -305,10 +305,9 @@ class Grid():
         N = len(X)
         for i in range(N-1):
             L_s.append(self.simple_swap(self.tuple_to_grid(self.int_to_tuple(X[i]), self.m, self.n), self.tuple_to_grid(self.int_to_tuple(X[i+1]), self.m, self.n)))
-        T_s = tuple(L_s)   
+        T_s = tuple(L_s)  
         return T_s
-   #Le graphe g est constitué de (n*m)! sommets et de 2mn-n-m arrêtes
-
+#Le graphe g est constitué de (n*m)! sommets et de 2mn-n-m arrêtes
 
     def heuristique(self, grid):
         value = 0
@@ -316,14 +315,45 @@ class Grid():
             for j in range(self.n):
                 if self.state[i][j] != grid.state[i][j]:
                     value += 1
-        return value
+        return value/2
     
+    def voisin(self):
+        L_swap = []
+        L_voisin = []
+        E = [-1, 1]
+        for i in range(self.m):
+            for j in range(self.n):
+                for k in E:
+                    if i+k < self.m and i+k > -1:
+                        if ((i, j), (i+k, j)) not in L_swap and ((i+k, j), (i, j)) not in L_swap:
+                            L_swap.append(((i, j), (i+k, j)))
+
+                    if j+k < self.n and j+k > -1:
+                        if ((i, j), (i, j+k)) not in L_swap and ((i, j+k), (i, j)) not in L_swap:
+                            L_swap.append(((i, j), (i, j+k)))
+        for swap in L_swap:
+            L_voisin.append(self.result_swap(swap))
+            
+        return L_voisin
+
+                    
+
     def result_swap(self, swap):
-        t = self.grid_to_tuple()
-        l = list(t)
-        l[swap[0]], l[swap[1]] = l[swap[1]], l[swap[0]]
-        return(self.tuple_to_grid(tuple(l), self.m, self.n))
-    
+        """
+        swap : ((i_1,j_1),(i_2,j_2))
+        Args:
+            swap (_type_): _description_
+        """
+        
+        L = self.state.copy()
+       
+        m = self.m
+        n = self.n
+        L[swap[0][0]][swap[0][1]], L[swap[1][0]][swap[1][1]] = L[swap[1][0]][swap[1][1]], L[swap[0][0]][swap[0][1]]
+        G = Grid(m, n, L)
+       
+        return G
+
     def compareheuristique(self, grid1, grid2):
         if self.heuristique(grid1) < self.heuristique(grid2):
             return 1
@@ -337,29 +367,18 @@ class Grid():
         heapq.heapify(closedFile)
         openFile = []
         heapq.heapify(openFile)
-        heapq.heappush(openFile, (self.heuristique(départ), départ))
+        heapq.heappush(openFile, (self.heuristique(départ), 0, départ))
         while len(openFile) > 0:
-            v , g = heapq.heappop(openFile)
+            heuristique_g, cout_g, g = heapq.heappop(openFile)
             if self.state == g.state:
                 heapq.heappush(closedFile, g)
                 return closedFile
-            voisin = []
-            n = g.n
-            m = g.m
-            for j in range(n-1): #on parcourt les n colonnes 
-                if m%2 == 0: # si on a un nombre pair de lignes
-                    for i in range(0, m-2, 2): 
-                        voisin.append((self.heuristique(g.result_swap((i + j*n, i+1 + j*n))), g.result_swap((i + j*n, i+1 + j *n))))
-                        print(g.result_swap((i + j*n, i+1 + j*n)))
-                        voisin.append((self.heuristique(g.result_swap((i + j*n, i + (j+1)*n))), g.result_swap((i + j*n, i + (j+1)*n))))
-                        print(g.result_swap((i + j*n, i + (j+1)*n)))
-                else:
-                    for i in range(0, m, 2):
-                        voisin.append((self.heuristique(g.result_swap((i + j*n, i+1 + j *n))), g.result_swap((i + j*n, i+1 + j *n))))
-                        voisin.append((self.heuristique(g.result_swap((i + j*n, i + (j+1) *n))), g.result_swap((i + j*n, i + (j+1)*n))))
-                    voisin.append((self.heuristique(g.result_swap((m-2 + j*n, m-1 + (j+1) *n))), g.result_swap((m-2 + j*n, m-1 + (j+1)*n))))
-            for i in voisin:
-                heapq.heappush(openFile, i)
+            L_voisin = g.voisin()
+            cout_i = cout_g - 1
+            for i in L_voisin:
+                if i not in closedFile or (self.heuristique(i), cout_i, i) not in openFile:
+                    openFile.append((self.heuristique(i), cout_i, i))
+            heapq.heapify(openFile)
             closedFile.append(g)
         return None
                    
