@@ -7,7 +7,7 @@ class Solver(Grid):
     A solver class, to be implemented.
     """
     def __init__(self, m, n, initial_state = []):
-        super().__init__(m, n, initial_state = [])
+        super().__init__(m, n, initial_state = initial_state)
 
     
 

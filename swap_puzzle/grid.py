@@ -309,15 +309,14 @@ class Grid():
         T_s = tuple(L_s)  
         return T_s
 #Le graphe g est constitué de (n*m)! sommets et de 2mn-n-m arrêtes
-
     def heuristique(self, grid):
-        value = 0
-        for i in range(self.m):
-            for j in range(self.n):
-                if self.state[i][j] != grid.state[i][j]:
-                    value += 1
-        return value/2
-    
+            value = 0
+            for i in range(self.m):
+                for j in range(self.n):
+                    if self.state[i][j] != grid.state[i][j]:
+                        value += 1
+            return value/2
+
     def voisin(self):
         L_swap = []
         L_voisin = []
@@ -356,36 +355,78 @@ class Grid():
         G = Grid(m, n, L)
         return G
 
-    def compareheuristique(self, grid1, grid2):
-        if self.heuristique(grid1) < self.heuristique(grid2):
-            return 1
-        elif self.heuristique(grid1) == self.heuristique(grid2):
-            return 0
-        else:
-            return -1
 
-    def A_etoile(self, départ):
+
+    def A_etoile_naif(self, départ):
         m = self.m
         n = self.n
         closedFile = []
         openFile = []
-        heapq.heapify(openFile)
-        
-        heapq.heappush(openFile, (self.heuristique(départ), 0, départ.tuple_to_int(départ.grid_to_tuple())))
+        heapq.heapify(openFile)    
+        heapq.heappush(openFile, (self.heuristique(départ), 0, départ.grid_to_tuple()))
         while len(openFile) > 0:
-            heuristique_g, cout_g, g_int = heapq.heappop(openFile)
-            g = self.tuple_to_grid(self.int_to_tuple(g_int), m, n)
+            heuristique_g, cout_g, g_tuple = heapq.heappop(openFile)
+            while g_tuple in closedFile:
+                heuristique_g, cout_g, g_tuple = heapq.heappop(openFile)
+            g = self.tuple_to_grid(g_tuple, m, n)
             if self.state == g.state:
-                closedFile.append((self.heuristique(g), cout_g, g.tuple_to_int(g.grid_to_tuple())))
-        
-                return closedFile
+                closedFile.append(g.grid_to_tuple())
+                chemin = []
+                for i in closedFile:
+                    chemin.append(self.tuple_to_grid(i, m, n))
+                return chemin
             L_voisin = g.voisin()
             cout_i = cout_g - 1
             for i in L_voisin:
-                if i not in closedFile or (self.heuristique(i), cout_i, i.tuple_to_int(i.grid_to_tuple())) not in openFile:
-                    openFile.append((self.heuristique(i), cout_i, i.tuple_to_int(i.grid_to_tuple())))
+                if i.grid_to_tuple() not in closedFile or (self.heuristique(i), cout_i, i.grid_to_tuple()) not in openFile:
+                    openFile.append((self.heuristique(i), cout_i, i.grid_to_tuple()))
             heapq.heapify(openFile)
-            closedFile.append((self.heuristique(g), cout_g, g.tuple_to_int(g.grid_to_tuple())))
+            closedFile.append(g.grid_to_tuple())
+           
+        return None
+
+    def heuristique_manhattan(self, grid):
+        m = self.m
+        n = self.n
+        dic_recherche = {}
+        heuristique = 0
+        for i in range(m):
+            for j in range(n):
+                dic_recherche[grid.state[i][j]] = (i,j)
+        for i in range(m):
+            for j in range(n):
+                if self.state[i][j] != grid.state[i][j]:
+                    i_grid, j_grid = dic_recherche[grid.state[i][j]][0], dic_recherche[grid.state[i][j]][0]
+                    heuristique += abs(i - i_grid) + abs(j - j_grid)
+        return heuristique//2
+
+
+    def A_etoile_manhattan(self, départ):
+        m = self.m
+        n = self.n
+        closedFile = []
+        openFile = []
+        heapq.heapify(openFile)    
+        heapq.heappush(openFile, (self.heuristique(départ), 0, départ.grid_to_tuple()))
+        while len(openFile) > 0:
+            heuristique_g, cout_g, g_tuple = heapq.heappop(openFile)
+            while g_tuple in closedFile:
+                heuristique_g, cout_g, g_tuple = heapq.heappop(openFile)
+            g = self.tuple_to_grid(g_tuple, m, n)
+            if self.state == g.state:
+                closedFile.append(g.grid_to_tuple())
+                chemin = []
+                for i in closedFile:
+                    chemin.append(self.tuple_to_grid(i, m, n))
+                return chemin
+            L_voisin = g.voisin()
+            cout_i = cout_g - 1
+            for i in L_voisin:
+                if i.grid_to_tuple() not in closedFile or (self.heuristique(i), cout_i, i.grid_to_tuple()) not in openFile:
+                    openFile.append((self.heuristique(i), cout_i, i.grid_to_tuple()))
+            heapq.heapify(openFile)
+            closedFile.append(g.grid_to_tuple())
+           
         return None
                    
 

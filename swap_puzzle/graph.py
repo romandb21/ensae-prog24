@@ -112,9 +112,11 @@ class Graph:
             for i in self.nodes:
                 if (i, s) in self.edges or (s, i) in self.edges:
                     if i not in M:
-                        L = self.enfiler(L, i)
+                        L = [i] + L
                         d[s].append(i)
-        
+            if L =[]:
+                print("Il n'existe pas de chemin")
+                return None
         C = [dst]
         while C[0] != src:
             for i in d.keys():
