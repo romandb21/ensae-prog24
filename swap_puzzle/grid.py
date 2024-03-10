@@ -127,7 +127,7 @@ class Grid():
         """
         Plot a representation of a grid, according to its current state, using matplotlib.pyplot.
         
-        Parameters: 
+        Parameters: self (Grid())
         -----------
         Output: 
         -------
@@ -309,15 +309,30 @@ class Grid():
        
         return L_s
 #Le graphe g est constitué de (n*m)! sommets et de 2mn-n-m arrêtes
+
     def heuristique(self, grid):
-            value = 0
-            for i in range(self.m):
-                for j in range(self.n):
-                    if self.state[i][j] != grid.state[i][j]:
-                        value += 1
-            return value/2
+        """Prend deux grilles et renvoie leur heuristique (ici c'est l'heuristique naïve comptant le nombre de cases différentes)
+        Args:
+            self, grid: Grid() de même dimensions
+
+        Returns:
+            value/2: float, valeur de l'heuristique entre self et grid
+        """
+        value = 0
+        for i in range(self.m):
+            for j in range(self.n):
+                if self.state[i][j] != grid.state[i][j]:
+                    value += 1
+        return value/2
 
     def voisin(self):
+        """Donne l'ensemble des grilles voisines de self, c'est à dire qui s'obtiennent en échangeant seulement deux cases.
+
+        Args:
+            self : Grid()
+        Returns:
+            L_voisin (list(Grid())): Liste des grilles voisines de self
+        """
         L_swap = []
         L_voisin = []
         E = [-1, 1]
@@ -344,9 +359,11 @@ class Grid():
 
     def result_swap(self, swap):
         """
-        swap : ((i_1,j_1),(i_2,j_2))
+        Renvoie la grille self sur laquelle on a effectué le swap "swap".
         Args:
-            swap (_type_): _description_
+            swap ((i_1,j_1),(i_2,j_2)): swap qu'on veut affecter à self
+        Returns:
+            value/2: float, valeur de l'heuristique entre self et grid   
         """
         L = copy.deepcopy(self.state)
         m = self.m
@@ -358,32 +375,47 @@ class Grid():
 
 
     def A_etoile_naif(self, départ):
+        """
+        Algorithme A* permettant d'obtenir un chemin entre départ et self(arrivée) en utilisant l'heuristique naïve
+        
+        Parameters: self, départ (Grid())
+        -----------
+        Output: closedFile (list) : liste contenant les grilles (ici représentés par des tuples) du chemin reliant départ et self
+        -------
+        """
         m = self.m
         n = self.n
-        closedFile = []
-        openFile = []
+        closedFile = [] #Chemin
+        openFile = [] #Sommets à explorer
         heapq.heapify(openFile)    
-        heapq.heappush(openFile, (self.heuristique(départ), 0, départ.grid_to_tuple()))
-        while len(openFile) > 0:
-            heuristique_g, cout_g, g_tuple = heapq.heappop(openFile)
-            while g_tuple in closedFile:
-                heuristique_g, cout_g, g_tuple = heapq.heappop(openFile)
-            g = self.tuple_to_grid(g_tuple, m, n)
-            if self.state == g.state:
-                closedFile.append(g.grid_to_tuple())
-                return closedFile
+        heapq.heappush(openFile, (self.heuristique(départ), 0, départ.grid_to_tuple()))#on ajoute le triplet (heuristique, cout, tuple) de notre sommet de départ
+        while len(openFile) > 0: #Tant qu'on à des sommets à explorer
+            heuristique_g, cout_g, g_tuple = heapq.heappop(openFile) #on prend le triplet (heuristique, cout, tuple) "minimun" de notre file de priorité
+            while g_tuple in closedFile: #Si ce sommet à déjà était exploré...
+                heuristique_g, cout_g, g_tuple = heapq.heappop(openFile) #...on prend le suivant 
+            g = self.tuple_to_grid(g_tuple, m, n) #on convertit notre tuple en grille
+            if self.state == g.state: #Si on est à l'arrivée
+                closedFile.append(g.grid_to_tuple()) #on rajoute le dernier sommet
+                return closedFile #on renvoie notre chemin
                 
-            L_voisin = g.voisin()
-            cout_i = cout_g - 1
+            L_voisin = g.voisin() #on prend tous nos voisins
+            cout_i = cout_g - 1 #on fait décroitre le "coût"
             for i in L_voisin:
                 if i.grid_to_tuple() not in closedFile or (self.heuristique(i), cout_i, i.grid_to_tuple()) not in openFile:
                     openFile.append((self.heuristique(i), cout_i, i.grid_to_tuple()))
             heapq.heapify(openFile)
-            closedFile.append(g.grid_to_tuple())
+            closedFile.append(g.grid_to_tuple()) #on marque ce sommet comme parcouru
            
         return None
 
     def heuristique_manhattan(self, grid):
+        """Prend deux grilles et renvoie leur heuristique (ici c'est l'heuristique basé sur la distance de Manhattan)
+        Args:
+            self, grid: Grid() de même dimensions
+
+        Returns:
+            heuristique//2: int, valeur de l'heuristique entre self et grid
+        """
         m = self.m
         n = self.n
         dic_recherche = {}
@@ -400,6 +432,14 @@ class Grid():
 
 
     def A_etoile_manhattan(self, départ):
+         """
+        Algorithme A* permettant d'obtenir un chemin entre départ et self(arrivée) en utilisant l'heuristique basé sur la distance de Manhattan
+        
+        Parameters: self, départ (Grid())
+        -----------
+        Output: closedFile (list) : liste contenant les grilles (ici représentés par des tuples) du chemin reliant départ et self
+        -------
+        """
         m = self.m
         n = self.n
         closedFile = []
