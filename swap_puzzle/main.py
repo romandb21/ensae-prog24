@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from grid import Grid
 from solver import Solver
 from graph import Graph
-
+import copy
 from itertools import permutations
 """
 g = Grid(2, 3)
@@ -52,4 +52,7 @@ print(b)
 
 g = Grid(3, 2, [[1, 2],[4, 3],[5, 6]])
 z = Grid(3,2, [[2,3], [4,1], [5, 6]])
-L = g.voisin()
+L = z.A_etoile(g)
+for i in L:
+    print(i[2])
+

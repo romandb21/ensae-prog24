@@ -6,6 +6,7 @@ import random
 import matplotlib.pyplot as plt
 from graph import Graph
 import heapq
+import copy
 class Grid():
     """
     A class representing the grid from the swap puzzle. It supports rectangular grids. 
@@ -321,6 +322,8 @@ class Grid():
         L_swap = []
         L_voisin = []
         E = [-1, 1]
+        m = self.m
+        n = self.n
         for i in range(self.m):
             for j in range(self.n):
                 for k in E:
@@ -331,10 +334,12 @@ class Grid():
                     if j+k < self.n and j+k > -1:
                         if ((i, j), (i, j+k)) not in L_swap and ((i, j+k), (i, j)) not in L_swap:
                             L_swap.append(((i, j), (i, j+k)))
+        
         for swap in L_swap:
-            L_voisin.append(self.result_swap(swap))
-            
+            new_grid = self.result_swap(swap)
+            L_voisin.append(new_grid)
         return L_voisin
+
 
                     
 
@@ -344,14 +349,11 @@ class Grid():
         Args:
             swap (_type_): _description_
         """
-        
-        L = self.state.copy()
-       
+        L = copy.deepcopy(self.state)
         m = self.m
         n = self.n
         L[swap[0][0]][swap[0][1]], L[swap[1][0]][swap[1][1]] = L[swap[1][0]][swap[1][1]], L[swap[0][0]][swap[0][1]]
         G = Grid(m, n, L)
-       
         return G
 
     def compareheuristique(self, grid1, grid2):
@@ -363,23 +365,27 @@ class Grid():
             return -1
 
     def A_etoile(self, départ):
+        m = self.m
+        n = self.n
         closedFile = []
-        heapq.heapify(closedFile)
         openFile = []
         heapq.heapify(openFile)
-        heapq.heappush(openFile, (self.heuristique(départ), 0, départ))
+        
+        heapq.heappush(openFile, (self.heuristique(départ), 0, départ.tuple_to_int(départ.grid_to_tuple())))
         while len(openFile) > 0:
-            heuristique_g, cout_g, g = heapq.heappop(openFile)
+            heuristique_g, cout_g, g_int = heapq.heappop(openFile)
+            g = self.tuple_to_grid(self.int_to_tuple(g_int), m, n)
             if self.state == g.state:
-                heapq.heappush(closedFile, g)
+                closedFile.append((self.heuristique(g), cout_g, g.tuple_to_int(g.grid_to_tuple())))
+        
                 return closedFile
             L_voisin = g.voisin()
             cout_i = cout_g - 1
             for i in L_voisin:
-                if i not in closedFile or (self.heuristique(i), cout_i, i) not in openFile:
-                    openFile.append((self.heuristique(i), cout_i, i))
+                if i not in closedFile or (self.heuristique(i), cout_i, i.tuple_to_int(i.grid_to_tuple())) not in openFile:
+                    openFile.append((self.heuristique(i), cout_i, i.tuple_to_int(i.grid_to_tuple())))
             heapq.heapify(openFile)
-            closedFile.append(g)
+            closedFile.append((self.heuristique(g), cout_g, g.tuple_to_int(g.grid_to_tuple())))
         return None
                    
 
