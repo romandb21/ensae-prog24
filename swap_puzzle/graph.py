@@ -114,7 +114,8 @@ class Graph:
                     if i not in M:
                         L = [i] + L
                         d[s].append(i)
-            if L =[]:
+                        print(d)
+            if L == []:
                 print("Il n'existe pas de chemin")
                 return None
         C = [dst]
@@ -122,6 +123,7 @@ class Graph:
             for i in d.keys():
                 if C[0] in d[i]:
                     C = [i] + C
+                    
                                 
         return C
     

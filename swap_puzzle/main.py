@@ -29,9 +29,11 @@ file_name = data_path + "grid4.in"
 g4 = Grid.grid_from_file(file_name)
 
 
-
+"""
 #for i in Grid(2, 2).A_etoile_naif(g0):
 #    print(i)
 L = Grid(4, 4).A_etoile_naif(g4)
 for i in L :
     print(i)
+"""
+print(g2.bfs_2())

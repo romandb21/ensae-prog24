@@ -306,8 +306,8 @@ class Grid():
         N = len(X)
         for i in range(N-1):
             L_s.append(self.simple_swap(self.tuple_to_grid(self.int_to_tuple(X[i]), self.m, self.n), self.tuple_to_grid(self.int_to_tuple(X[i+1]), self.m, self.n)))
-        T_s = tuple(L_s)  
-        return T_s
+       
+        return L_s
 #Le graphe g est constitué de (n*m)! sommets et de 2mn-n-m arrêtes
     def heuristique(self, grid):
             value = 0
@@ -371,10 +371,8 @@ class Grid():
             g = self.tuple_to_grid(g_tuple, m, n)
             if self.state == g.state:
                 closedFile.append(g.grid_to_tuple())
-                chemin = []
-                for i in closedFile:
-                    chemin.append(self.tuple_to_grid(i, m, n))
-                return chemin
+                return closedFile
+                
             L_voisin = g.voisin()
             cout_i = cout_g - 1
             for i in L_voisin:
@@ -415,10 +413,7 @@ class Grid():
             g = self.tuple_to_grid(g_tuple, m, n)
             if self.state == g.state:
                 closedFile.append(g.grid_to_tuple())
-                chemin = []
-                for i in closedFile:
-                    chemin.append(self.tuple_to_grid(i, m, n))
-                return chemin
+                return closedFile
             L_voisin = g.voisin()
             cout_i = cout_g - 1
             for i in L_voisin:
