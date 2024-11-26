@@ -25,3 +25,4 @@ ensae-prog24/
 ├── README.md            # Project documentation
 └── requirements.txt     # Dependency file (empty or to be completed)
 
+
