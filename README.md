@@ -18,6 +18,14 @@ This project was developed as part of the programming course for first-year stud
 Here is the structure of this repository:
 
 ```
-ensae-prog24/ │ ├── main.py # Main execution script ├── grid.py # Grid and move management ├── solver.py # Solving algorithm implementations ├── tests/ # Unit tests │ ├── test_grid.py # Tests for grid management │ ├── test_solver.py # Tests for solving algorithms ├── README.md # Project documentation └── requirements.txt # Dependency file (empty or to be completed)
+ensae-prog24/
+│
+├── main.py # Main execution script
+├── grid.py # Grid and move management
+├── solver.py # Solving algorithm implementations
+├── tests/ # Unit tests
+│ ├── test_grid.py # Tests for grid management
+│ ├── test_solver.py # Tests for solving algorithms
+└── README.md # Project documentation
 ```
 
